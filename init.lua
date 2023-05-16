@@ -6,23 +6,34 @@ require('packer').startup(function(use)
   use 'AlessandroYorba/Alduin'
   use 'EdenEast/nightfox.nvim'
   use 'savq/melange'
+  use ({ 'projekt0n/github-nvim-theme', tag = 'v0.0.7' })
   use {
-      'nvim-telescope/telescope.nvim', tag = '0.1.0',
-      -- or                            , branch = '0.1.x',
-      requires = { {'nvim-lua/plenary.nvim'} }
-      }
+  'nvim-telescope/telescope.nvim', tag = '0.1.1',
+-- or                            , branch = '0.1.x',
+  requires = { {'nvim-lua/plenary.nvim'} },
+  use { 'nmac427/guess-indent.nvim' },
+  use 'ThePrimeagen/harpoon'
+}
 end)
-
+require('guess-indent').setup {}
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+vim.keymap.set('n', '<S-e>', builtin.grep_string, {})
+
+local hp = require('harpoon.mark')
+local hpui = require('harpoon.ui')
+vim.keymap.set('n', '<leader>q', hp.add_file, {})
+vim.keymap.set('n', '<leader>e', hpui.toggle_quick_menu, {})
+vim.keymap.set('n', '<A-q>', hpui.nav_prev, {})
+vim.keymap.set('n', '<A-e>', hpui.nav_next, {})
 
 -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 require("formatter").setup {
   -- Enable or disable logging
-  logging = false,
+  logging = true,
   -- Set the log level
   log_level = vim.log.levels.WARN,
   -- All formatter configurations are opt-in
@@ -32,19 +43,24 @@ require("formatter").setup {
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
     ["cpp"] = {
-      -- "formatter.filetypes.any" defines default configurations for any
-      -- filetype
       require("formatter.filetypes.cpp").clangformat
     }
   }
 }
+function file_exists(name)
+   local f = io.open(name, "r")
+   return f ~= nil and io.close(f)
+end
 
+
+if file_exists(".clang-format") then
 vim.cmd [[
 augroup FormatAutogroup
   autocmd!
   autocmd BufWritePost * FormatWrite
 augroup END
 ]]
+end
 
 vim.o.tabstop = 2
 vim.o.shiftwidth = 2
@@ -55,13 +71,13 @@ vim.o.nu = true
 vim.o.rnu = true
 vim.o.swapfile = false 
 vim.o.splitright = true
-vim.o.guifont = "Cascadia Mono:h10"
+vim.o.guifont = "JetBrains Mono:h10"
 
 vim.g.gruvbox_baby_function_style = "NONE"
 vim.g.gruvbox_baby_comment_style = "NONE"
 vim.g.gruvbox_baby_keyword_style = "NONE"
 vim.g.gruvbox_baby_background_color = "dark"
-vim.cmd.colorscheme('terafox')
+vim.cmd.colorscheme('carbonfox')
 
 function build_debug()
   vim.cmd{cmd = 'vsplit', args = { 'term://powershell cmake --build build' } }
@@ -73,3 +89,9 @@ end
 
 vim.keymap.set('n', '<F5>', build_debug)
 vim.keymap.set('n', '<A-F5>', run_debugger)
+
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+  command = "if mode() != 'c' | checktime | endif",
+  pattern = { "*" },
+})
