@@ -12,9 +12,15 @@ require('packer').startup(function(use)
 -- or                            , branch = '0.1.x',
   requires = { {'nvim-lua/plenary.nvim'} },
   use { 'nmac427/guess-indent.nvim' },
-  use 'ThePrimeagen/harpoon'
+  use 'ThePrimeagen/harpoon',
+  use 'nvim-treesitter/nvim-treesitter'
 }
 end)
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "cpp" },
+  auto_install = false,
+  highlight = { enable = false }
+}
 require('guess-indent').setup {}
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -22,6 +28,7 @@ vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set('n', '<S-e>', builtin.grep_string, {})
+vim.keymap.set('n', '<S-F>', builtin.treesitter, {})
 
 local hp = require('harpoon.mark')
 local hpui = require('harpoon.ui')
@@ -71,7 +78,7 @@ vim.o.nu = true
 vim.o.rnu = true
 vim.o.swapfile = false 
 vim.o.splitright = true
-vim.o.guifont = "JetBrains Mono:h10"
+vim.o.guifont = "Source Code Pro:h11"
 
 vim.g.gruvbox_baby_function_style = "NONE"
 vim.g.gruvbox_baby_comment_style = "NONE"
@@ -87,6 +94,8 @@ function run_debugger()
   vim.cmd{cmd = 'vsplit', args = { 'term://powershell ./debug.rdbg' } }
 end
 
+vim.cmd.command('Build vs | ter cmake --build build')
+vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
 vim.keymap.set('n', '<F5>', build_debug)
 vim.keymap.set('n', '<A-F5>', run_debugger)
 
