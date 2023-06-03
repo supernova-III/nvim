@@ -86,18 +86,9 @@ vim.g.gruvbox_baby_keyword_style = "NONE"
 vim.g.gruvbox_baby_background_color = "dark"
 vim.cmd.colorscheme('carbonfox')
 
-function build_debug()
-  vim.cmd{cmd = 'vsplit', args = { 'term://powershell cmake --build build' } }
-end
-
-function run_debugger()
-  vim.cmd{cmd = 'vsplit', args = { 'term://powershell ./debug.rdbg' } }
-end
-
 vim.cmd.command('Build vs | ter cmake --build build')
 vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
-vim.keymap.set('n', '<F5>', build_debug)
-vim.keymap.set('n', '<A-F5>', run_debugger)
+vim.cmd.command('RunTests vs | ter cmake --build build && ctest --test-dir build')
 
 vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
