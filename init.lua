@@ -1,7 +1,7 @@
 require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
-  use 'luisiacc/gruvbox-baby'
+  use 'morhetz/gruvbox'
   use { 'mhartington/formatter.nvim' }
   use 'AlessandroYorba/Alduin'
   use 'EdenEast/nightfox.nvim'
@@ -13,7 +13,8 @@ require('packer').startup(function(use)
   requires = { {'nvim-lua/plenary.nvim'} },
   use { 'nmac427/guess-indent.nvim' },
   use 'ThePrimeagen/harpoon',
-  use 'nvim-treesitter/nvim-treesitter'
+  use 'nvim-treesitter/nvim-treesitter',
+  use 'mbledkowski/neuleetcode.vim'
 }
 end)
 require'nvim-treesitter.configs'.setup {
@@ -78,13 +79,13 @@ vim.o.nu = true
 vim.o.rnu = true
 vim.o.swapfile = false 
 vim.o.splitright = true
-vim.o.guifont = "Source Code Pro:h11"
+vim.o.guifont = "Noto Sans Mono SemiCondensed:h11"
 
-vim.g.gruvbox_baby_function_style = "NONE"
-vim.g.gruvbox_baby_comment_style = "NONE"
-vim.g.gruvbox_baby_keyword_style = "NONE"
-vim.g.gruvbox_baby_background_color = "dark"
-vim.cmd.colorscheme('carbonfox')
+vim.g.gruvbox_contrast_dark = "hard"
+vim.g.gruvbox_bold = 0
+vim.g.gruvbox_italic = 0
+vim.cmd.colorscheme('gruvbox')
+vim.cmd [[set cinoptions=l1]]
 
 function build_debug()
   vim.cmd{cmd = 'vsplit', args = { 'term://powershell cmake --build build' } }
@@ -96,6 +97,8 @@ end
 
 vim.cmd.command('Build vs | ter cmake --build build')
 vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
+vim.cmd.command('CMakeConfig vs | ter cmake -B build')
+vim.cmd.command('CMakeConfigNinja vs | ter cmake -B build -G"Ninja Multi-Config"')
 vim.keymap.set('n', '<F5>', build_debug)
 vim.keymap.set('n', '<A-F5>', run_debugger)
 
