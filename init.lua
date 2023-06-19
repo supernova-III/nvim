@@ -95,6 +95,7 @@ function run_debugger()
   vim.cmd{cmd = 'vsplit', args = { 'term://powershell ./debug.rdbg' } }
 end
 
+vim.cmd.command('BuildAndTest vs | ter cmake --build build&&ctest --test-dir build')
 vim.cmd.command('Build vs | ter cmake --build build')
 vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
 vim.cmd.command('CMakeConfig vs | ter cmake -B build')
