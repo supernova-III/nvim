@@ -85,25 +85,16 @@ vim.o.guifont = "Noto Sans Mono SemiCondensed:h11"
 vim.g.gruvbox_contrast_dark = "hard"
 vim.g.gruvbox_bold = 0
 vim.g.gruvbox_italic = 0
-vim.cmd.colorscheme('duskfox')
+vim.cmd.colorscheme('gruvbox')
 vim.cmd [[set cinoptions=l1]]
 vim.cmd [[set clipboard=unnamedplus]]
 
-function build_debug()
-  vim.cmd{cmd = 'vsplit', args = { 'term://powershell cmake --build build' } }
-end
-
-function run_debugger()
-  vim.cmd{cmd = 'vsplit', args = { 'term://powershell ./debug.rdbg' } }
-end
-
+vim.cmd.command('Debug vs | ter .\\debug.rdbg')
 vim.cmd.command('BuildAndTest vs | ter cmake --build build&&ctest --test-dir build')
 vim.cmd.command('Build vs | ter cmake --build build')
 vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
 vim.cmd.command('CMakeConfig vs | ter cmake -B build')
 vim.cmd.command('CMakeConfigNinja vs | ter cmake -B build -G"Ninja Multi-Config"')
-vim.keymap.set('n', '<F5>', build_debug)
-vim.keymap.set('n', '<A-F5>', run_debugger)
 
 vim.o.autoread = true
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
