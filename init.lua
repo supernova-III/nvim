@@ -5,8 +5,6 @@ require('packer').startup(function(use)
   use { 'mhartington/formatter.nvim' }
   use 'AlessandroYorba/Alduin'
   use 'EdenEast/nightfox.nvim'
-  use 'savq/melange'
-  use ({ 'projekt0n/github-nvim-theme', tag = 'v0.0.7' })
   use {
   'nvim-telescope/telescope.nvim', tag = '0.1.1',
 -- or                            , branch = '0.1.x',
@@ -14,11 +12,10 @@ require('packer').startup(function(use)
   use { 'nmac427/guess-indent.nvim' },
   use 'ThePrimeagen/harpoon',
   use 'nvim-treesitter/nvim-treesitter',
-  use 'mbledkowski/neuleetcode.vim'
 }
 end)
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "cpp" },
+  ensure_installed = { "cpp", "c" },
   auto_install = false,
   highlight = { enable = false }
 }
@@ -52,6 +49,10 @@ require("formatter").setup {
     -- any filetype
     ["cpp"] = {
       require("formatter.filetypes.cpp").clangformat
+    },
+
+    ["c"] = {
+      require("formatter.filetypes.c").clangformat
     }
   }
 }
@@ -84,8 +85,9 @@ vim.o.guifont = "Noto Sans Mono SemiCondensed:h11"
 vim.g.gruvbox_contrast_dark = "hard"
 vim.g.gruvbox_bold = 0
 vim.g.gruvbox_italic = 0
-vim.cmd.colorscheme('gruvbox')
+vim.cmd.colorscheme('duskfox')
 vim.cmd [[set cinoptions=l1]]
+vim.cmd [[set clipboard=unnamedplus]]
 
 function build_debug()
   vim.cmd{cmd = 'vsplit', args = { 'term://powershell cmake --build build' } }
