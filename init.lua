@@ -11,13 +11,24 @@ require('packer').startup(function(use)
   requires = { {'nvim-lua/plenary.nvim'} },
   use { 'nmac427/guess-indent.nvim' },
   use 'ThePrimeagen/harpoon',
-  use 'nvim-treesitter/nvim-treesitter',
+  use 'nvim-treesitter/nvim-treesitter'
 }
 end)
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "cpp", "c" },
   auto_install = false,
-  highlight = { enable = false }
+  highlight = { 
+    enable = true,
+
+    disable = function(lang, buf)
+      local max_filesize = 1 * 1024 * 1024
+      local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+      if ok and stats and stats.size > max_filesize then
+        return true
+      end
+    end,
+  }
 }
 require('guess-indent').setup {}
 local builtin = require('telescope.builtin')
@@ -38,7 +49,7 @@ vim.keymap.set('n', '<A-e>', hpui.nav_next, {})
 -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 require("formatter").setup {
   -- Enable or disable logging
-  logging = true,
+  logging = false,
   -- Set the log level
   log_level = vim.log.levels.WARN,
   -- All formatter configurations are opt-in
@@ -50,10 +61,12 @@ require("formatter").setup {
     ["cpp"] = {
       require("formatter.filetypes.cpp").clangformat
     },
-
     ["c"] = {
       require("formatter.filetypes.c").clangformat
-    }
+    },
+    ["go"] = {
+      require("formatter.filetypes.go").gofmt
+    },
   }
 }
 function file_exists(name)
@@ -62,7 +75,7 @@ function file_exists(name)
 end
 
 
-if file_exists(".clang-format") then
+if file_exists(".clang-format") or file_exists("go.mod") then
 vim.cmd [[
 augroup FormatAutogroup
   autocmd!
@@ -90,6 +103,8 @@ vim.cmd [[set cinoptions=l1]]
 vim.cmd [[set clipboard=unnamedplus]]
 
 vim.cmd.command('Debug vs | ter .\\debug.rdbg')
+vim.cmd.command('GoBuild vs | ter go build main.go')
+vim.cmd.command('GoRun vs | ter go run main.go')
 vim.cmd.command('BuildAndTest vs | ter cmake --build build&&ctest --test-dir build')
 vim.cmd.command('Build vs | ter cmake --build build')
 vim.cmd.command('BuildRelease vs | ter cmake --build build --config Release')
