@@ -10,14 +10,13 @@ require('packer').startup(function(use)
   'nvim-telescope/telescope.nvim', tag = '0.1.1',
 -- or                            , branch = '0.1.x',
   requires = { {'nvim-lua/plenary.nvim'} },
-  use { 'nmac427/guess-indent.nvim' },
   use 'ThePrimeagen/harpoon',
   use 'nvim-treesitter/nvim-treesitter'
 }
 end)
 local lspconfig = require('lspconfig')
-lspconfig.clangd.setup {}
 lspconfig.gopls.setup {}
+lspconfig.clangd.setup {}
 vim.highlight.priorities.semantic_tokens = 95
 vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
 
@@ -60,7 +59,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "cpp", "c", "go" },
+  ensure_installed = { "cpp", "c", "go", "rust" },
   auto_install = false,
   highlight = { 
     enable = true,
@@ -74,7 +73,6 @@ require'nvim-treesitter.configs'.setup {
     end,
   }
 }
-require('guess-indent').setup {}
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
@@ -121,6 +119,8 @@ end
 
 if file_exists(".clang-format") or file_exists("go.mod") then
 vim.cmd [[
+inoremap <C-n> <C-x><C-o>
+set completeopt-=preview
 augroup FormatAutogroup
   autocmd!
   autocmd BufWritePost * FormatWrite
