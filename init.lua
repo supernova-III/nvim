@@ -1,78 +1,18 @@
-require('packer').startup(function(use)
-  -- Packer can manage itself
-  use 'wbthomason/packer.nvim'
-  use 'morhetz/gruvbox'
-  use 'neovim/nvim-lspconfig'
-  use { 'mhartington/formatter.nvim' }
-  use 'AlessandroYorba/Alduin'
-  use 'EdenEast/nightfox.nvim'
-  use {
-  'nvim-telescope/telescope.nvim', tag = '0.1.1',
--- or                            , branch = '0.1.x',
-  requires = { {'nvim-lua/plenary.nvim'} },
-  use 'ThePrimeagen/harpoon',
-  use 'nvim-treesitter/nvim-treesitter'
-}
-end)
-local lspconfig = require('lspconfig')
-lspconfig.gopls.setup {}
-lspconfig.clangd.setup {}
-vim.highlight.priorities.semantic_tokens = 95
-vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
+require('packer').startup(
+  function(use)
+    -- Packer can manage itself
+    use 'wbthomason/packer.nvim'
+    use 'morhetz/gruvbox'
+    use { 'mhartington/formatter.nvim' }
+    use 'AlessandroYorba/Alduin'
+    use 'EdenEast/nightfox.nvim'
+    use {
+      'nvim-telescope/telescope.nvim', tag = '0.1.4',
+      requires = { {'nvim-lua/plenary.nvim'} },
+    }
+  end
+)
 
--- Global mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
-
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
-    -- Buffer local mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local opts = { buffer = ev.buf }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<space>f', function()
-      vim.lsp.buf.format { async = true }
-    end, opts)
-  end,
-})
-
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "cpp", "c", "go", "rust" },
-  auto_install = false,
-  highlight = { 
-    enable = true,
-
-    disable = function(lang, buf)
-      local max_filesize = 1 * 1024 * 1024
-      local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-      if ok and stats and stats.size > max_filesize then
-        return true
-      end
-    end,
-  }
-}
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
@@ -80,13 +20,6 @@ vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set('n', '<S-e>', builtin.grep_string, {})
 vim.keymap.set('n', '<S-F>', builtin.treesitter, {})
-
-local hp = require('harpoon.mark')
-local hpui = require('harpoon.ui')
-vim.keymap.set('n', '<leader>q', hp.add_file, {})
-vim.keymap.set('n', '<leader>e', hpui.toggle_quick_menu, {})
-vim.keymap.set('n', '<A-q>', hpui.nav_prev, {})
-vim.keymap.set('n', '<A-e>', hpui.nav_next, {})
 
 -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 require("formatter").setup {
@@ -111,6 +44,7 @@ require("formatter").setup {
     },
   }
 }
+
 function file_exists(name)
    local f = io.open(name, "r")
    return f ~= nil and io.close(f)
